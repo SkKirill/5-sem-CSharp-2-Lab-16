@@ -33,6 +33,11 @@ public class LinkedTree<T> : ITree<T> where T : IComparable<T>
             return;
         }
 
+        if (NeedsRebalancing())
+        {
+            Rebalance();
+        }
+
         AddRecursive(_root, item);
     }
 
@@ -75,6 +80,10 @@ public class LinkedTree<T> : ITree<T> where T : IComparable<T>
             throw new TreeItemNotFoundException();
 
         Count--;
+        if (NeedsRebalancing())
+        {
+            Rebalance();
+        }
     }
 
     public IEnumerator<T> GetEnumerator()
@@ -86,6 +95,91 @@ public class LinkedTree<T> : ITree<T> where T : IComparable<T>
     {
         return GetEnumerator();
     }
+
+    public override string ToString()
+    {
+        if (_root == null)
+            return "[empty]";
+
+        return BuildTreeString(_root, "", true);
+    }
+
+    private string BuildTreeString(Node<T>? node, string indent, bool isLast)
+    {
+        if (node == null)
+            return "";
+
+        string result = indent;
+
+        if (isLast)
+        {
+            result += "└─";
+            indent += "  ";
+        }
+        else
+        {
+            result += "├─";
+            indent += "| ";
+        }
+
+        result += node.Value + "\n";
+
+        bool hasLeft = node.Left != null;
+        bool hasRight = node.Right != null;
+
+        if (hasLeft)
+            result += BuildTreeString(node.Left, indent, !hasRight);
+
+        if (hasRight)
+            result += BuildTreeString(node.Right, indent, true);
+
+        return result;
+    }
+
+    private bool NeedsRebalancing()
+    {
+        if (_root == null) return false;
+
+        int GetHeight(Node<T>? node)
+        {
+            if (node == null) return 0;
+            return 1 + Math.Max(GetHeight(node.Left), GetHeight(node.Right));
+        }
+
+        int leftHeight = GetHeight(_root.Left);
+        int rightHeight = GetHeight(_root.Right);
+
+        return Math.Abs(leftHeight - rightHeight) > 1;
+    }
+
+    private void Rebalance()
+    {
+        if (_root == null) 
+            return;
+
+        // собрать все значения в списке и отсортировать
+        var nodes = Nodes.ToList();
+        nodes.Sort();
+
+        // строим идеально сбалансированное BST
+        Node<T>? BuildBalanced(int left, int right)
+        {
+            if (left > right)
+                return null;
+
+            int mid = (left + right) / 2;
+            var node = new Node<T>(nodes[mid])
+            {
+                Left = BuildBalanced(left, mid - 1),
+                Right = BuildBalanced(mid + 1, right)
+            };
+
+            return node;
+        }
+
+        _root = BuildBalanced(0, nodes.Count - 1);
+    }
+
 
     private void AddRecursive(Node<T> current, T item)
     {
@@ -171,7 +265,7 @@ public class LinkedTree<T> : ITree<T> where T : IComparable<T>
         }
 
         if (node.Right == null) yield break;
-        
+
         foreach (var value in Traverse(node.Right))
             yield return value;
     }

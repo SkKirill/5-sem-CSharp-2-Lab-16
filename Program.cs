@@ -12,72 +12,124 @@ internal static class Program
         Console.OutputEncoding = new UTF8Encoding();
 
         // Тест ArrayTree
-        ITree<int> tree = new ArrayTree<int>();
+        ITree<MyClass> tree = new ArrayTree<MyClass>();
 
         Tests(tree);
 
         // Тест LinkedTree
-        tree = new LinkedTree<int>();
+        tree = new LinkedTree<MyClass>();
         Tests(tree);
 
         // Тест UnmutableTree
-        tree = new UnmutableTree<int>(tree);
+        tree = new UnmutableTree<MyClass>(tree);
         Tests(tree);
     }
 
-    private static void Tests(ITree<int> tree)
+    private static void Tests(ITree<MyClass> tree)
     {
-        Console.WriteLine(new string('=', 60));
-        Console.Write($"Запуск тестов для дерева: ");
-        Console.WriteLine($"{tree.GetType().Name}");
-        Console.WriteLine(new string('=', 60));
-        Console.WriteLine();
+        Console.WriteLine("Запуск тестов");
 
         // Добавление элементов
-        tree.Add(1);
-        tree.Add(5);
-        tree.Add(13);
-        tree.Add(17);
-        
-        PrintTree(tree);
-
-        // Проверка Contains
-        Console.WriteLine(tree.Contains(1));
-        Console.WriteLine(tree.Contains(7));
-
-        // Удаление элементов
-        tree.Remove(1);
-        PrintTree(tree);
-
         try
         {
-            tree.Remove(6);
+            tree.Add(new MyClass(1));
+            tree.Add(new MyClass(5));
+            tree.Add(new MyClass(13));
+            tree.Add(new MyClass(-3));
+            tree.Add(new MyClass(-7));
+            tree.Add(new MyClass(-4));
+            tree.Add(new MyClass(3));
         }
         catch (Exception e)
         {
             Console.WriteLine(e);
-            throw;
         }
-        PrintTree(tree);
+        Console.WriteLine(tree);
+
+        // Проверка Contains
+        Console.WriteLine(tree.Contains(new MyClass(1)));
+        Console.WriteLine(tree.Contains(new MyClass(7)));
+
+        // Удаление элементов
+        try
+        {
+            tree.Remove(new MyClass(1));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        Console.WriteLine(tree);
+
+        try
+        {
+            tree.Remove(new MyClass(6));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        Console.WriteLine(tree);
 
         // Проверка утилит TreeUtils
-        Console.WriteLine(TreeUtils<int>.Exists(tree, x => x > 3));
-        Console.WriteLine(TreeUtils<int>.FindAll(tree, x => x > 3));
-        Console.WriteLine(TreeUtils<int>.CheckForAll(tree, x => x > 3));
+        try
+        {
+            Console.WriteLine(TreeUtils<MyClass>.Exists(tree, x => x.CompareTo(new MyClass(3)) == 1));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
         
+        try
+        {
+            Console.WriteLine(TreeUtils<MyClass>.FindAll(tree, x => x.CompareTo(new MyClass(3)) == 1));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
+        
+        try
+        {
+            Console.WriteLine(TreeUtils<MyClass>.CheckForAll(tree, x => x.CompareTo(new MyClass(3)) == 1));
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
 
-        // 5. Очистка дерева
-        tree.Clear();
-        PrintTree(tree);
+        Console.Write($"Элементы: ");
+        TreeUtils<MyClass>.ForEach(tree, x => Console.Write(x + " "));
+        
+        try
+        {
+            // Очистка дерева
+            tree.Clear();
+            
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+        }
     }
 
-    private static void PrintTree(ITree<int> tree)
+    private class MyClass(int value) : IComparable<MyClass>
     {
-        if (tree.IsEmpty)
-            Console.WriteLine("Дерево пустое");
-        
-        Console.Write($"Элементы: ");
-        TreeUtils<int>.ForEach(tree, x => Console.Write(x + " "));
-        Console.WriteLine();
+        private int Value { get; } = value;
+
+
+        public int CompareTo(MyClass? other)
+        {
+            if (ReferenceEquals(this, other)) 
+                return 0;
+
+            return other is null ? 1 : Value.CompareTo(other.Value);
+        }
+
+        public override string ToString()
+        {
+            return Value.ToString();
+        }
     }
 }

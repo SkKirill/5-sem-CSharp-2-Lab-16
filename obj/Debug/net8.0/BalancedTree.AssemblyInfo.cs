@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BalancedTree")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+191a3c41637a3859f0622b72db6910a3cfaf8e3f")]
 [assembly: System.Reflection.AssemblyProductAttribute("BalancedTree")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BalancedTree")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -35,6 +35,11 @@ public class UnmutableTree<T>(ITree<T> tree) : ITree<T>
         throw new TreeUnmutableException();
     }
 
+    public override string ToString()
+    {
+        return tree.ToString()!;
+    }
+
     public IEnumerator<T> GetEnumerator()
     {
         return tree.GetEnumerator();
